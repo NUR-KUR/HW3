@@ -1,0 +1,25 @@
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8000"
+    environment:
+      PORT: "8000"
+      GREETING: "${GREETING:-Hello, Docker!}"
+      STORAGE: sqlite
+      DATA_FILE: /data/counter.db
+    volumes:
+      - sqlite_data:/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/readyz', timeout=2).close()"
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  sqlite_data:
